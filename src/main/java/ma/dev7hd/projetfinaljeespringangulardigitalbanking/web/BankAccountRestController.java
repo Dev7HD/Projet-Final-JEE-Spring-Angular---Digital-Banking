@@ -2,16 +2,11 @@ package ma.dev7hd.projetfinaljeespringangulardigitalbanking.web;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.BankAccountDTO;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.CurrentBankAccountDTO;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.SavingBankAccountDTO;
+import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.*;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.BankAccountNotFoundException;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.CustomerNotFoundException;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.services.BankAccountServiceImpl;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,8 +18,8 @@ public class BankAccountRestController {
     private BankAccountServiceImpl bankAccountService;
 
     @GetMapping("/account/{id}")
-    public BankAccountDTO getBankAccountById(@PathVariable String id) throws BankAccountNotFoundException {
-        return bankAccountService.getBankAccount(id);
+    public BankAccountDTO getBankAccountById(@PathVariable(name = "id") String accountId) throws BankAccountNotFoundException {
+        return bankAccountService.getBankAccount(accountId);
     }
 
     @GetMapping("/accounts/all")
@@ -42,6 +37,16 @@ public class BankAccountRestController {
         return bankAccountServiceImpl.saveSavingBankAccount(initialBalance,customerId,interestRate);
     }
 
+    @GetMapping("/accounts/{id}/operations")
+    public List<OperationDTO> getBankAccountOperations(@PathVariable(name = "id") String accountId){
+        return bankAccountService.accountHistory(accountId);
+    }
 
-
+    @GetMapping("/accounts/{id}/history")
+    public AccountHistoryDTO getAccountHistory(
+            @PathVariable(name = "id") String accountId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) throws BankAccountNotFoundException {
+        return bankAccountService.getAccountHistory(accountId, page, size);
+    }
 }

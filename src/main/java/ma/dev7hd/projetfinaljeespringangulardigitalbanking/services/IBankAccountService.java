@@ -1,9 +1,6 @@
 package ma.dev7hd.projetfinaljeespringangulardigitalbanking.services;
 
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.BankAccountDTO;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.CurrentBankAccountDTO;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.CustomerDTO;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.SavingBankAccountDTO;
+import ma.dev7hd.projetfinaljeespringangulardigitalbanking.dtos.*;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.BankAccountNotFoundException;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.CustomerNotFoundException;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.InsufficientBalanceException;
@@ -30,4 +27,8 @@ public interface IBankAccountService {
     CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
     void deleteCustomer(Long customerId);
+
+    List<OperationDTO> accountHistory(String accountId);
+
+    AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException;
 }
