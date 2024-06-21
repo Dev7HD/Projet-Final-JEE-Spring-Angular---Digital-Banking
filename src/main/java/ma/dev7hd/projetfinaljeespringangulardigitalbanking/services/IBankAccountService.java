@@ -31,4 +31,14 @@ public interface IBankAccountService {
     List<OperationDTO> accountHistory(String accountId);
 
     AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException;
+
+    List<BankAccountDTO> getCustomerAccounts(Long id);
+
+    List<OperationDTO> getOperations();
+
+    long getCountSavingAccounts();
+
+    long getCountCurrentAccounts();
+
+    List<Object[]> getOperationsCountByMonth();
 }

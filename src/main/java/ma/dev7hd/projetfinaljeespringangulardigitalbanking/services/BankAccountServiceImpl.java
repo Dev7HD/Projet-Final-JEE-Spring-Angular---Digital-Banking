@@ -9,16 +9,13 @@ import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.BankAccoun
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.CustomerNotFoundException;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.exceptions.InsufficientBalanceException;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.mappers.IAppMapper;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.repositories.BankAccountRepository;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.repositories.CustomerRepository;
-import ma.dev7hd.projetfinaljeespringangulardigitalbanking.repositories.OperationRepository;
+import ma.dev7hd.projetfinaljeespringangulardigitalbanking.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +25,8 @@ public class BankAccountServiceImpl implements IBankAccountService {
     private BankAccountRepository bankAccountRepository;
     private CustomerRepository customerRepository;
     private OperationRepository operationRepository;
+    private CurrentBankAccountRepository currentBankAccountRepository;
+    private SavingBankAccountRepository savingBankAccountRepository;
     private IAppMapper appMapper;
 
     //Customer methods
@@ -130,7 +129,7 @@ public class BankAccountServiceImpl implements IBankAccountService {
         operation.setAmount(amount);
         operation.setDescription(description);
         operation.setAccount(account);
-        operation.setDate(new Date());
+        operation.setDate(new Date(2024, Calendar.FEBRUARY,1));
         operation.setType(OperationType.CREDIT);
         operationRepository.save(operation);
         account.setBalance(account.getBalance() + amount);
@@ -176,7 +175,63 @@ public class BankAccountServiceImpl implements IBankAccountService {
         accountHistoryDTO.setPageSize(size);
         accountHistoryDTO.setCurrentPage(page);
         accountHistoryDTO.setTotalPages(accountOperations.getTotalPages());
+        accountHistoryDTO.setTotalElements(accountOperations.getTotalElements());
         return accountHistoryDTO;
     }
 
+    @Override
+    public List<BankAccountDTO> getCustomerAccounts(Long id) {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByCustomerId(id);
+        return bankAccounts.stream().map(bankAccount -> appMapper.toBankAccountDTO(bankAccount)).toList();
+    }
+
+    @Override
+    public List<OperationDTO> getOperations(){
+        List<Operation> operations = operationRepository.findAll();
+        return operations.stream().map(operation -> appMapper.toOperationDTO(operation)).collect(Collectors.toList());
+    }
+
+    @Override
+    public long getCountCurrentAccounts(){
+        return currentBankAccountRepository.count();
+    }
+
+    @Override
+    public long getCountSavingAccounts(){
+        return savingBankAccountRepository.count();
+    }
+
+    @Override
+    public List<Object[]> getOperationsCountByMonth() {
+        List<Object[]> debitResults = operationRepository.countDebitOperationsByMonth();
+        List<Object[]> creditResults = operationRepository.countCreditOperationsByMonth();
+        List<Object[]> finalResults = new ArrayList<>();
+        finalResults.add(new Object[]{"Debit",operationCountList(debitResults)});
+        finalResults.add(new Object[]{"Credit",operationCountList(creditResults)});
+
+        return finalResults;
+    }
+
+    List<Object[]> operationCountList(List<Object[]> list){
+        Map<Integer, Long> monthCountMap = new HashMap<>();
+
+        // Initialize the map with all months and zero counts
+        for (int month = 1; month <= 12; month++) {
+            monthCountMap.put(month, 0L);
+        }
+
+        // Populate the map with actual counts from the query
+        for (Object[] result : list) {
+            Integer month = (Integer) result[0];
+            Long count = (Long) result[1];
+            monthCountMap.put(month, count);
+        }
+
+        // Convert the map to a list of Object[] for the result
+        List<Object[]> finalResults = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            finalResults.add(new Object[]{monthCountMap.get(month)});
+        }
+        return finalResults;
+    }
 }

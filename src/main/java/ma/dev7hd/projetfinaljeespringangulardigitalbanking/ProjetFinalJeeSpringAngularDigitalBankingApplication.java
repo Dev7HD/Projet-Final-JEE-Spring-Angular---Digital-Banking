@@ -17,6 +17,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -43,8 +44,10 @@ public class ProjetFinalJeeSpringAngularDigitalBankingApplication {
                     bankAccountService.saveSavingBankAccount(Math.random()*900000,customer.getId(),3.5);
                     List<BankAccountDTO> bankAccounts = bankAccountService.listBankAccounts();
                     for (BankAccountDTO bankAccount : bankAccounts) {
-                        for (int i = 0; i < 3; i++) {
+                        for (int i = 0; i < 10; i++) {
                             bankAccountService.credit(Math.random()*15000,bankAccount.getId(),"Credit");
+                        }
+                        for (int i = 0; i < 6; i++) {
                             bankAccountService.debit(1000 + Math.random()*5000,bankAccount.getId(),"Debit");
                         }
                     }
@@ -92,7 +95,9 @@ public class ProjetFinalJeeSpringAngularDigitalBankingApplication {
                     Operation operation = new Operation();
                     operation.setAccount(account);
                     operation.setType(Math.random() > 0.5 ? OperationType.CREDIT : OperationType.DEBIT);
-                    operation.setDate(new Date());
+                    Date date = new Date(2024, 6,15);
+                    operation.setDate(date);
+                    System.out.println(date);
                     operation.setAmount(Math.random() * 10000 + 1000);
                     operationRepository.save(operation);
                 }

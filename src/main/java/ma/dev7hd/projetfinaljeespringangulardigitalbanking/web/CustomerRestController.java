@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @AllArgsConstructor
 @Slf4j
@@ -25,7 +26,7 @@ public class CustomerRestController {
         return bankAccountService.getCustomer(id);
     }
 
-    @PostMapping("/customers")
+    @PostMapping("/customers/new")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO) {
         return bankAccountService.saveCustomer(customerDTO);
     }

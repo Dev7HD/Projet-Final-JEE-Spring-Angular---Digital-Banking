@@ -1,5 +1,6 @@
 package ma.dev7hd.projetfinaljeespringangulardigitalbanking.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import ma.dev7hd.projetfinaljeespringangulardigitalbanking.enumirats.AccountStatus;
@@ -23,5 +24,6 @@ public class BankAccount {
     @ManyToOne
     private Customer customer;
     @OneToMany(mappedBy = "account")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Operation> operations;
 }
