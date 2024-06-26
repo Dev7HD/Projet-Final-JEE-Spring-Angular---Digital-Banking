@@ -207,15 +207,23 @@ public class BankAccountServiceImpl implements IBankAccountService {
     public List<Object[]> getOperationsCountByMonth() {
         List<Object[]> debitResults = operationRepository.countDebitOperationsByMonth();
         List<Object[]> creditResults = operationRepository.countCreditOperationsByMonth();
+
+        // Prepare final results list
         List<Object[]> finalResults = new ArrayList<>();
-        finalResults.add(new Object[]{"Debit",operationCountList(debitResults)});
-        finalResults.add(new Object[]{"Credit",operationCountList(creditResults)});
+
+        // Process debit results
+        List<Object[]> processedDebitResults = operationCountList(debitResults);
+        finalResults.add(new Object[]{"Debit", processedDebitResults});
+
+        // Process credit results
+        List<Object[]> processedCreditResults = operationCountList(creditResults);
+        finalResults.add(new Object[]{"Credit", processedCreditResults});
 
         return finalResults;
     }
 
     List<Object[]> operationCountList(List<Object[]> list){
-        Map<Integer, Long> monthCountMap = new HashMap<>();
+        Map<Integer, Long> monthCountMap = new LinkedHashMap<>();
 
         // Initialize the map with all months and zero counts
         for (int month = 1; month <= 12; month++) {
@@ -231,8 +239,8 @@ public class BankAccountServiceImpl implements IBankAccountService {
 
         // Convert the map to a list of Object[] for the result
         List<Object[]> finalResults = new ArrayList<>();
-        for (int month = 1; month <= 12; month++) {
-            finalResults.add(new Object[]{monthCountMap.get(month)});
+        for (Map.Entry<Integer, Long> entry : monthCountMap.entrySet()) {
+            finalResults.add(new Object[]{entry.getKey(), entry.getValue()});
         }
         return finalResults;
     }
