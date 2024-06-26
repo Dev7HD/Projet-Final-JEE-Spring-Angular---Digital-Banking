@@ -40,8 +40,14 @@ public class ProjetFinalJeeSpringAngularDigitalBankingApplication {
             });
             bankAccountService.listCustomer().forEach(customer -> {
                 try {
-                    bankAccountService.saveCurrentBankAccount(Math.random()*900000,customer.getId(),5000);
-                    bankAccountService.saveSavingBankAccount(Math.random()*900000,customer.getId(),3.5);
+                    for (int i = 0; i < 10; i++) {
+                        double random = Math.random();
+                        if (random < 0.5) {
+                            bankAccountService.saveCurrentBankAccount(Math.random()*900000,customer.getId(),5000);
+                        } else {
+                            bankAccountService.saveSavingBankAccount(Math.random()*900000,customer.getId(),3.5);
+                        }
+                    }
                     List<BankAccountDTO> bankAccounts = bankAccountService.listBankAccounts();
                     for (BankAccountDTO bankAccount : bankAccounts) {
                         for (int i = 0; i < 10; i++) {

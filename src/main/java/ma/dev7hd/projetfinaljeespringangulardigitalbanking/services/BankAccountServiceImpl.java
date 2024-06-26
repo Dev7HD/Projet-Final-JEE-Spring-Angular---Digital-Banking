@@ -72,10 +72,11 @@ public class BankAccountServiceImpl implements IBankAccountService {
     public CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, Long customerId, double overDraft) throws CustomerNotFoundException {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
         CurrentAccount account = new CurrentAccount();
+        double random = Math.random();
         account.setBalance(initialBalance);
         account.setCustomer(customer);
         account.setCreatedAt(new Date());
-        account.setStatus(AccountStatus.CREATED);
+        account.setStatus(random <= 0.3 ? AccountStatus.CREATED : random <= 0.6 ? AccountStatus.ACTIVATED : AccountStatus.SUSPENDED);
         account.setCurrency("MAD");
         account.setOverDraft(overDraft);
         return appMapper.toCurrentBankAccountDTO(bankAccountRepository.save(account));
@@ -85,10 +86,11 @@ public class BankAccountServiceImpl implements IBankAccountService {
     public SavingBankAccountDTO saveSavingBankAccount(double initialBalance, Long customerId, double interestRate) throws CustomerNotFoundException {
         Customer customer = customerRepository.findById(customerId).orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
         SavingAccount account = new SavingAccount();
+        double random = Math.random();
         account.setBalance(initialBalance);
         account.setCustomer(customer);
         account.setCreatedAt(new Date());
-        account.setStatus(AccountStatus.CREATED);
+        account.setStatus(random <= 0.3 ? AccountStatus.CREATED : random <= 0.6 ? AccountStatus.ACTIVATED : AccountStatus.SUSPENDED);
         account.setCurrency("MAD");
         account.setInterestRate(interestRate);
         return appMapper.toSavingBankAccountDTO(bankAccountRepository.save(account));
@@ -129,7 +131,7 @@ public class BankAccountServiceImpl implements IBankAccountService {
         operation.setAmount(amount);
         operation.setDescription(description);
         operation.setAccount(account);
-        operation.setDate(new Date(2024, Calendar.FEBRUARY,1));
+        operation.setDate(new Date(2024, (int)(Math.random() * 12),1));
         operation.setType(OperationType.CREDIT);
         operationRepository.save(operation);
         account.setBalance(account.getBalance() + amount);
@@ -143,7 +145,7 @@ public class BankAccountServiceImpl implements IBankAccountService {
         operation.setAmount(amount);
         operation.setDescription(description);
         operation.setAccount(account);
-        operation.setDate(new Date());
+        operation.setDate(new Date(2024, (int)(Math.random() * 12),1));
         operation.setType(OperationType.DEBIT);
         operationRepository.save(operation);
         account.setBalance(account.getBalance() - amount);
